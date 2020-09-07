@@ -1,6 +1,8 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include "constants.hpp"
+
 class Grid{
 public:
     int food;
