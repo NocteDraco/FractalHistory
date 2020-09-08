@@ -63,8 +63,74 @@ static const int LAND_NOT_TRAVERSABLE   = 9005;
 static const int LAND_LIVING            = 9006;
 static const int LAND_DEFENSE           = 9007;
 
+// RESOURCES
+static const int RES_FOOD               = 100;
+static const int RES_WATER              = 101;
+static const int RES_AIR                = 102;
+static const int RES_SHELTER            = 103;
+static const int RES_PATH               = 104;
+static const int RES_SAME_RACE          = 105; // NOT IMPLEMENTED
+static const int RES_GROUND             = 106;
+static const int RES_METAL              = 107;
+
+// FOOD RESOURCE SPECIFICS
+static const int RES_FOOD_MEAT          = 300;
+static const int RES_FOOD_BERRY         = 301;
+static const int RES_FOOD_FRUIT         = 302;
+static const int RES_FOOD_GRAIN         = 303;
+
+// 
+//
+// STATS
+//
+//
+
+static const int STR                    = 500;
+static const int DEX                    = 501;
+static const int CON                    = 502;
+static const int INT                    = 503;
+static const int WIS                    = 504;
+static const int CHA                    = 505;
+
+//
+//
+// SKILL CHECKS
+//
+//
+static const int ATHLETICS              = 600;
+// DEXTERITY
+static const int ACROBATICS             = 601;
+static const int SLEIGHT_OF_HAND        = 602;
+static const int STEALTH                = 603;
+// INTELLIGENCE
+static const int ARCANA                 = 604;
+static const int HISTORY                = 605;
+static const int INVESTIGATION          = 606;
+static const int NATURE                 = 607;
+static const int RELIGION               = 608;
+// WISDOM
+static const int ANIMAL_HANDLING        = 609;
+static const int INSIGHT                = 610;
+static const int MEDICINE               = 611;
+static const int PERCEPTION             = 612;
+static const int SURVIVAL               = 613;
+// CHARISMA
+static const int DECEPTION              = 614;
+static const int INTIMIDATION           = 615;
+static const int PERFORMANCE            = 616;
+static const int PERSUASION             = 617;
+//
+//
+// SKILL CHECKS
+//
+//
+
+
+
 // PARAMETERS 
 static const int MAX_HISTORY            = 100; // Maximum amount of history stored per increment
+
+// INITIALIZATION PARAMETERS 
 static const float FOOD_MEAN            = 0.0;
 static const float FOOD_VAR             = 0.5;
 static const int GRID_SIZE_X            = 100;
@@ -72,6 +138,18 @@ static const int GRID_SIZE_Y            = 100;
 static const float NOISE_LAND_FREQUENCY = 8.0;
 static const int NOISE_LAND_OCTAVES     = 8;
 static const bool SAVE_HISTORY_INTS     = false;
+
+
+//
+//
+// ERRORS
+//
+//
+static const int SUCCESS                    = 1;
+static const int SUCCESS_NO_ACTION          = 2;
+static const int ERROR_BAD_SWITCH_RESOURCE  = -10;
+static const int ERROR_BAD_SWITCH_ACTION    = -11;
+
 
 
 #endif

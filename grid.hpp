@@ -6,6 +6,7 @@
 class Grid{
 public:
     int food;
+    int water;
     int height;
     int move_cost;
     int fertility;

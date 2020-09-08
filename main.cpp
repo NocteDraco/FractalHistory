@@ -11,9 +11,10 @@
 // Do not let actor exit grid
 #include <algorithm>
 #include <iostream>
-#include <fstream>
 #include <stdlib.h>
+#include <fstream>
 #include <random>
+#include <map>
 
 #include "constants.hpp"
 #include "actor.hpp"
@@ -25,7 +26,7 @@
 using namespace std;
 
 int main() {
-    // Create and open the file
+    // Create and open the history file
     ofstream historyFile;
     historyFile.open ("history.log", ios::out);
 
@@ -34,7 +35,7 @@ int main() {
     const int ny = GRID_SIZE_Y;
     Grid myGrid[nx * ny];
     default_random_engine generator;
-    normal_distribution<float> distribution(FOOD_MEAN, FOOD_VAR);
+    normal_distribution<float> distribution(FOOD_MEAN,FOOD_VAR);
 
     int flInd;
     int ifood;
@@ -50,7 +51,7 @@ int main() {
     {
         for (int j = 0; j < nx; j++)
         {
-            flInd = (i * ny) + j;            
+            flInd = (i * nx) + j;            
             ifood = static_cast<int> (distribution(generator));
             ifood = max(ifood, 0);
             ifood = min(ifood, 9);
@@ -73,6 +74,9 @@ int main() {
         // Loop over time steps in days
         for (int i = 0; i < n_inc_per_day; i++){
             myactor.incrementTime(myGrid);
+            cout << "Actor stat use count (str): ";
+            cout << myactor.getStatCount(STR);
+            cout << endl;
         }
 
         if (SAVE_HISTORY_INTS)
