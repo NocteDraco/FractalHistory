@@ -99,49 +99,35 @@ private:
     typedef map <int, int> ResPosMap;
     ResPosMap myResPosXMap, myResPosYMap;
 
-    
-
 public:
     ResourceAwareness()
     {
-        myResSightMap[RES_FOOD]             = false;
         myResSightMap[RES_WATER]            = false;
         myResSightMap[RES_AIR]              = false;
         myResSightMap[RES_SHELTER]          = false;
         myResSightMap[RES_PATH]             = false;
-        myResSightMap[RES_SAME_RACE]        = false;
         myResSightMap[RES_GROUND]           = false;
         myResSightMap[RES_METAL]            = false;
-        myResSightMap[RES_FOOD_MEAT]        = false;
-        myResSightMap[RES_FOOD_BERRY]       = false;
-        myResSightMap[RES_FOOD_FRUIT]       = false;
-        myResSightMap[RES_FOOD_GRAIN]       = false;
-
-        myResPosXMap[RES_FOOD]             = 0;
+        myResSightMap[RES_FOOD_ANIMAL]      = false;
+        myResSightMap[RES_FOOD_PLANT]       = false;
+        
         myResPosXMap[RES_WATER]            = 0;
         myResPosXMap[RES_AIR]              = 0;
         myResPosXMap[RES_SHELTER]          = 0;
         myResPosXMap[RES_PATH]             = 0;
-        myResPosXMap[RES_SAME_RACE]        = 0;
         myResPosXMap[RES_GROUND]           = 0;
         myResPosXMap[RES_METAL]            = 0;
-        myResPosXMap[RES_FOOD_MEAT]        = 0;
-        myResPosXMap[RES_FOOD_BERRY]       = 0;
-        myResPosXMap[RES_FOOD_FRUIT]       = 0;
-        myResPosXMap[RES_FOOD_GRAIN]       = 0;
+        myResPosXMap[RES_FOOD_ANIMAL]      = 0;
+        myResPosXMap[RES_FOOD_PLANT]       = 0;
 
-        myResPosYMap[RES_FOOD]             = 0;
         myResPosYMap[RES_WATER]            = 0;
         myResPosYMap[RES_AIR]              = 0;
         myResPosYMap[RES_SHELTER]          = 0;
         myResPosYMap[RES_PATH]             = 0;
-        myResPosYMap[RES_SAME_RACE]        = 0;
         myResPosYMap[RES_GROUND]           = 0;
         myResPosYMap[RES_METAL]            = 0;
-        myResPosYMap[RES_FOOD_MEAT]        = 0;
-        myResPosYMap[RES_FOOD_BERRY]       = 0;
-        myResPosYMap[RES_FOOD_FRUIT]       = 0;
-        myResPosYMap[RES_FOOD_GRAIN]       = 0;
+        myResPosYMap[RES_FOOD_ANIMAL]      = 0;
+        myResPosYMap[RES_FOOD_PLANT]       = 0;
         
     }
 
@@ -158,6 +144,14 @@ public:
         }
         return 0;
     }
+
+    bool getResourceSightOut(int const& key)
+    {
+        bool retVal;
+        getResourceSight(key, &retVal);
+        return retVal;
+    }
+
     int setResourceSight(int const& key, bool canSeeResource)
     {
         // NOTE: Don't use const_iterator here since we need to modify
@@ -244,55 +238,88 @@ public:
 
 };
 
-class DecisionMaker{
+
+class ActorInventory
+{
+private:
+    typedef std::map <int, int> InvMap;
+    InvMap myInv;
+
+    int carry = 100;
 public:
+    ActorInventory()
+    {
+        // NECESSITIES
+        myInv[RES_WATER]                = 100;
+        myInv[RES_FOOD_ANIMAL]          = 0;
+        myInv[RES_FOOD_PLANT]           = 100;
+
+        // OTHER RESOURCES
+        myInv[RES_METAL]                = 0;
+        myInv[RES_WOOD]                 = 0;
+        myInv[RES_MAGIC]                = 0;
+        myInv[RES_COIN]                 = 0;
+
+    }
+
+    int getInvVal(int const&, int*);
+    int getInvValOut(int const&);
+    int setInvVal(int const&, int);
+    int addInvVal(int const&, int);
+    int getInvWeight(int *);
     
-    int food = 10; 
-    // Remaining food (in units of days)
-    int water = 10; 
-    // Remaining water (in units of days)
-    int health = 5; 
-    // Total health of actor (0 = dead, 10 = dying)
-    int carry = 20; 
-    // Max amount of carrying capacity  
+    int getCarry(){return carry;}
+    void setCarry(int carry){this->carry = carry;}
+};
+
+
+class DecisionMaker{
+private:
+    typedef std::map <int, bool> StateMap;
+    StateMap myStateMap;
+    typedef std::map <int, int> InterestMap;
+    InterestMap myInterest;
+public:
     int inefficientFactor = 10; 
     // How bad they are at skills (lower is better)
 
+    DecisionMaker()
+    {
+        myStateMap[STATE_ALIVE]             = true;
+        myStateMap[STATE_STARVING]          = false;
+        myStateMap[STATE_DEHYDRATED]        = false;
+        myStateMap[STATE_HUNGRY]            = false;
+        myStateMap[STATE_PARCHED]           = false;
 
-    // States
-    bool starving = false; 
-    bool dehydrated = false;
-    bool dying = false; 
-    bool alive = true; 
+        // Random interest generation
+        int rWealth, rSocial, rBattle, rExplore, rLazy, rTotal;
+        rWealth = rand()%100;
+        rSocial = rand()%100;
+        rBattle = rand()%100;
+        rLazy   = rand()%100;
+        rExplore = rand()%100;
+        rTotal = rWealth + rSocial + rBattle + rExplore + rLazy;
+        myInterest[INTEREST_WEALTH]         = rWealth;
+        myInterest[INTEREST_SOCIAL]         = rSocial;
+        myInterest[INTEREST_BATTLE]         = rBattle;
+        myInterest[INTEREST_EXPLORE]        = rExplore;
+        myInterest[INTEREST_LAZY]           = rLazy;
+        myInterest[INTEREST_TOTAL]          = rTotal;
 
+    }
+    int getStateVal(int const&, bool*);
+    bool getStateValOut(int const&);
+    int setStateVal(int const&, bool);
 
-
-    // Property
-    void setFood(int food){this->food = food;}
-    void addFood(int food){this->food += food;}
-    void setWater(int water){this->water = water;}
-    void addWater(int water){this->water += water;}
-    void setHealth(int health){this->health = health;}
-    void addHealth(int health){this->health += health;}
-
-    // State
-    void setStarving(bool newStarving){starving = newStarving;}
-    void setDying(bool newDying){dying = newDying;}
-    void setAlive(bool newAlive){alive = newAlive;}
-
-    // Property
-    int getFood(){return food;}
-    int getWater(){return water;}
-    int getHealth(){return health;}
-    int getCarry(){return carry;}
-
-    // State
-    bool getStarving(){return starving;}
-    bool getDying(){return dying;}
-    bool getAlive(){return alive;}
+    int getInterestVal(int const&, int*);
+    int getInterestValOut(int const&);
 };
 
-class Actor: public DecisionMaker, public StatHistory, public ResourceAwareness{
+class Actor: \
+public DecisionMaker,\
+public StatHistory, \
+public ResourceAwareness,\
+public ActorInventory{
 
 
 private:
@@ -304,6 +331,7 @@ private:
     int Str, Dex, Con, Wis, Int, Cha, Pro;
     int numActions = 0; // Number of actions available in this increment
     int maxActions = 3; // Maximum number of actions available per increment
+    int health = 10; // Total health of the actor;
     
     // Identifiers
     string name; // Name of the actor
@@ -319,14 +347,15 @@ public:
           int iY,
           int nx,
           int ny,
-          int Str, 
-          int Dex, 
-          int Con,
-          int Wis, 
-          int Int, 
-          int Cha,
-          int Pro,
-          int uuid){
+          int uuid,
+          int Str = 10, 
+          int Dex = 10, 
+          int Con = 10,
+          int Wis = 10, 
+          int Int = 10, 
+          int Cha = 10,
+          int Pro = 0
+          ){
         this->nx = nx;
         this->ny = ny;
         setGrid(iX, iY);
@@ -386,6 +415,10 @@ public:
         }
     }
 
+    void setHealth(int health){this->health = health;}
+    void addHealth(int health){this->health += health;}
+    int getHealth(){return health;}
+
     //
     // GETTERS
     //
@@ -423,10 +456,8 @@ public:
     void incrementDay();
     void incrementTime(Grid*);
     int takeActions(Grid*, int);
-    int getTotalWeight();
-    bool encumbered();
-    void checkGrid(Grid*);
-    
+    int getPriorityAction();
+
     // Resource finding
     void lookForResource(Grid*, int);
     int resSightSkillCheck(int);

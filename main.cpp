@@ -46,7 +46,7 @@ int main() {
     const double fy = ny / frequency;
 
     // Loop through grid and generate all of the grid information
-    cout << "Constructing grid of existence" << endl;
+    historyFile << "Constructing grid of existence" << endl;
     for (int i = 0; i < ny; i++)
     {
         for (int j = 0; j < nx; j++)
@@ -55,28 +55,34 @@ int main() {
             ifood = static_cast<int> (distribution(generator));
             ifood = max(ifood, 0);
             ifood = min(ifood, 9);
-            myGrid[flInd].food = ifood;
-            myGrid[flInd].height = static_cast<int> (perlin.accumulatedOctaveNoise2D_0_1(j / fx, i / fy, octaves));
-            myGrid[flInd].move_cost = rand() % 2 + 1;
+            myGrid[flInd].setGridResVal(RES_FOOD_ANIMAL, ifood);
+            ifood = static_cast<int> (distribution(generator));
+            ifood = max(ifood, 0);
+            ifood = min(ifood, 9);
+            myGrid[flInd].setGridResVal(RES_FOOD_PLANT, ifood);
+            myGrid[flInd].setGridResVal(LAND_ID_HEIGHT, static_cast<int> (perlin.accumulatedOctaveNoise2D_0_1(j / fx, i / fy, octaves)));
         }
     }
     // Build the actor, test out movement
-    Actor myactor(25, 25, nx, ny, 10, 10, 10, 10, 10, 10, 0, 1);    
+    Actor myactor(25, 25, nx, ny, 1);
+
+    cout << myactor.getInterestValOut(INTEREST_WEALTH) << " ";
+    cout << myactor.getInterestValOut(INTEREST_SOCIAL) << " ";
+    cout << myactor.getInterestValOut(INTEREST_BATTLE) << " ";
+    cout << myactor.getInterestValOut(INTEREST_LAZY) << " ";
+    cout << endl;
 
     // Loop over days till actor dies
     int n_days = 0;
-    int MAX_DAYS = 40;
-    int n_inc_per_day = 2;
+    int MAX_DAYS = 5000;
+    int n_inc_per_day = 24;
     int i_hist_file;
-    cout << "Running sim for " << MAX_DAYS << endl;
-    while (myactor.getAlive() & (n_days <= MAX_DAYS))
+    historyFile << "Running sim for " << MAX_DAYS << endl;
+    while (myactor.getStateValOut(STATE_ALIVE) & (n_days <= MAX_DAYS))
     {
         // Loop over time steps in days
         for (int i = 0; i < n_inc_per_day; i++){
             myactor.incrementTime(myGrid);
-            cout << "Actor stat use count (str): ";
-            cout << myactor.getStatCount(STR);
-            cout << endl;
         }
 
         if (SAVE_HISTORY_INTS)
@@ -101,8 +107,9 @@ int main() {
 
         // Increment the day
         myactor.incrementDay();
-        historyFile << "End of day " << n_days;
-        historyFile << " | Food "   << myactor.getFood();
+        historyFile << "Day " << n_days;
+        historyFile << " | Food "   << myactor.getInvValOut(RES_FOOD_ANIMAL) << " " << myactor.getInvValOut(RES_FOOD_PLANT);
+        historyFile << " | Water " << myactor.getInvValOut(RES_WATER);
         historyFile << " | Health " << myactor.getHealth();
         historyFile << " | Grid pos (x,y) : (" << myactor.getGridX() << "," << myactor.getGridY() << ")";        
         historyFile << endl;
